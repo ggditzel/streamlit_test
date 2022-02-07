@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 
 @st.cache
 def processa_dados():
-    dados_voos = pd.read_feather('./dados/dados_basicos_voos.feather')
+    dados_voos = pd.read_csv('./dados/dados_basicos_voos.csv', sep=';', encoding='utf-8')
     dados_aeroportos = pd.read_excel('./dados/glossario_de_aerodromo.xls', skiprows=3)
 
     dados_aeroportos = dados_aeroportos.drop(['Unnamed: 0','País', 'Continente'], axis=1)
