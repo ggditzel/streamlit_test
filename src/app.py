@@ -1,11 +1,10 @@
 import streamlit as st
 import pandas as pd
-import feather
 from datetime import datetime, timedelta
 
 @st.cache
 def processa_dados():
-    dados_voos = feather.read_dataframe('./dados/dados_basicos_voos.feather')
+    dados_voos = pd.read_feather('./dados/dados_basicos_voos.feather')
     dados_aeroportos = pd.read_excel('./dados/glossario_de_aerodromo.xls', skiprows=3)
 
     dados_aeroportos = dados_aeroportos.drop(['Unnamed: 0','País', 'Continente'], axis=1)
