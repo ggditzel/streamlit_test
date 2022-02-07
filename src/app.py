@@ -13,26 +13,42 @@ def processa_dados():
     dados_voos = pd.merge(dados_voos, dados_aeroportos, on=['ICAO Aeródromo Origem'])
     return dados_voos
 
+def filtra_aeroporto_por_cidade(dados_voos, cidade='RIO DE JANEIRO'):
+    filtro = dados_voos['Cidade'] == cidade
+    return dados_voos[filtro]['Nome Aeroporto'].unique().tolist()
+
+def filtra_empresa_por_aeroporto(dados_voos, cidade, aeroporto):
+    filtro1 = dados_voos['Cidade'] == cidade
+    filtro2 = dados_voos['Nome Aeroporto'] == aeroporto
+    return dados_voos[filtro1 & filtro2]['ICAO Empresa Aérea'].unique().tolist()
+
+def filtra_voo_por_empresa(dados_voos, cidade, aeroporto, empresa):
+    filtro1 = dados_voos['Cidade'] == cidade
+    filtro2 = dados_voos['Nome Aeroporto'] == aeroporto
+    filtro3 = dados_voos['ICAO Empresa Aérea'] == empresa
+    return dados_voos[filtro1 & filtro2 & filtro3]['Número Voo'].unique().tolist()
+
 def main():
 
     dados_voos = processa_dados()
 
-
     lista_cidades=dados_voos['Cidade'].unique().tolist()
-    lista_aeroportos=dados_voos['Nome Aeroporto'].unique().tolist()
-    lista_empresas=dados_voos['ICAO Empresa Aérea'].unique().tolist()
-    lista_voos=dados_voos['Número Voo'].unique().tolist()
+    cidade = st.sidebar.selectbox("Selecione a Cidade", lista_cidades)
+
+    lista_aeroportos = filtra_aeroporto_por_cidade(dados_voos, cidade)
+    aeroporto = st.sidebar.selectbox("Selecione o Aeroporto", lista_aeroportos)
+
+    lista_empresas = filtra_empresa_por_aeroporto(dados_voos, cidade, aeroporto)
+    empresa = st.sidebar.selectbox("Selecione a Empresa", lista_empresas)
+
+    lista_voos = filtra_voo_por_empresa(dados_voos, cidade, aeroporto, empresa)
+    voo = st.sidebar.selectbox("Selecione o Voo", lista_voos)
 
     st.title("Previsão de Atraso de Voos Comerciais")
     st.markdown("Selecione os valores no menu lateral esquerdo (pode ser necessário expandir)")
 
     start_date = datetime.today()
     end_date = start_date + timedelta(days=3)
-
-    cidade = st.sidebar.selectbox("Selecione a Cidade", lista_cidades)
-    aeroporto = st.sidebar.selectbox("Selecione o Aeroporto", lista_aeroportos)
-    empresa = st.sidebar.selectbox("Selecione a Empresa", lista_empresas)
-    voo = st.sidebar.selectbox("Selecione o Voo", lista_voos)
     data = st.sidebar.date_input("Selecione a Data de Partida", min_value=start_date, max_value=end_date, value=start_date)
     data_texto = data.strftime('%d/%m/%Y')
 
